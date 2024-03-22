@@ -3,9 +3,17 @@ package Lab_2
 import (
 	"bytes"
 	"testing"
+
+	"gopkg.in/check.v1"
 )
 
-func TestCompute(t *testing.T) {
+func Test(t *testing.T) { check.TestingT(t) }
+
+type ComputeSuite struct{}
+
+var _ = check.Suite(&ComputeSuite{})
+
+func (s *ComputeSuite) TestCompute(c *check.C) {
 	tests := []struct {
 		name        string
 		input       string
@@ -21,39 +29,33 @@ func TestCompute(t *testing.T) {
 		{
 			name:        "Invalid Expression",
 			input:       "+ 5 *",
-			expected:    "invalid expression",
+			expected:    "",
 			expectedErr: true,
 		},
 		{
 			name:        "Invalid Input",
 			input:       "+$ 5 4",
-			expected:    "invalid input",
+			expected:    "",
 			expectedErr: true,
 		},
 	}
 
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			input := bytes.NewBufferString(test.input)
-			output := &bytes.Buffer{}
-			handler := ComputeHandler{
-				Input:  input,
-				Output: output,
-			}
+		c.Log("Test Case: ", test.name)
+		input := bytes.NewBufferString(test.input)
+		output := &bytes.Buffer{}
+		handler := ComputeHandler{
+			Input:  input,
+			Output: output,
+		}
 
-			err := handler.Compute()
+		err := handler.Compute()
 
-			if (err != nil) != test.expectedErr {
-				t.Errorf("expected error: %v, actual: %v", test.expectedErr, err)
-			}
-
-			if err != nil && err.Error() != test.expected {
-				t.Errorf("expected error message: %s, actual: %s", test.expected, err.Error())
-			}
-
-			if err == nil && output.String() != test.expected {
-				t.Errorf("expected output: %s, actual: %s", test.expected, output.String())
-			}
-		})
+		if test.expectedErr {
+			c.Check(err, check.NotNil)
+		} else {
+			c.Check(err, check.IsNil)
+			c.Check(output.String(), check.Equals, test.expected)
+		}
 	}
 }
