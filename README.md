@@ -8,7 +8,7 @@
 
 [Pull Request зі збіркою](https://github.com/PudchenkoAlexei/GoLang_Lab2/actions/runs/8394996362)
 
-## ВИконали
+## Виконали
 
 Пудченко Олексій 
 
