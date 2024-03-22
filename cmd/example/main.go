@@ -3,25 +3,59 @@ package main
 import (
 	"flag"
 	"fmt"
-	lab2 "github.com/roman-mazur/architecture-lab-2"
-)
+	"os"
+	"strings"
 
-var (
-	inputExpression = flag.String("e", "", "Expression to compute")
-	// TODO: Add other flags support for input and output configuration.
+	Lab_2 "github.com/PudchenkoAlexei/GoLang_Lab2"
 )
 
 func main() {
+
+	var eFlag = flag.String("e", "", "input from console")
+	var fFlag = flag.String("f", "", "input from file")
+	var oFlag = flag.String("o", "", "output file")
+
 	flag.Parse()
 
-	// TODO: Change this to accept input from the command line arguments as described in the task and
-	//       output the results using the ComputeHandler instance.
-	//       handler := &lab2.ComputeHandler{
-	//           Input: {construct io.Reader according the command line parameters},
-	//           Output: {construct io.Writer according the command line parameters},
-	//       }
-	//       err := handler.Compute()
+	if *eFlag == "" && *fFlag == "" {
+		fmt.Fprintln(os.Stderr, "error: either -e or -f flag must be used")
+		os.Exit(1)
+	}
 
-	res, _ := lab2.PrefixToPostfix("+ 2 2")
-	fmt.Println(res)
+	if *eFlag != "" && *fFlag != "" {
+		fmt.Fprintln(os.Stderr, "error: either -e or -f must be used")
+		os.Exit(1)
+	}
+	var handler = Lab_2.ComputeHandler{
+		Input:  strings.NewReader(*eFlag),
+		Output: os.Stdout,
+	}
+
+	if *eFlag == "" && *fFlag != "" {
+		inFile, err := os.Open(*fFlag)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+
+		defer inFile.Close()
+		handler.Input = inFile
+	}
+
+	if *oFlag != "" {
+		outfile, err := os.Create(*oFlag)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+
+		handler.Output = outfile
+		defer outfile.Close()
+	}
+
+	err := handler.Compute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %s\n", err)
+		os.Exit(1)
+	}
 }
