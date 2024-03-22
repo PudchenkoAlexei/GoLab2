@@ -6,10 +6,6 @@ import (
 	"strings"
 )
 
-func isOperator(c string) bool {
-	return len(c) == 1 && strings.ContainsAny(c, "+-*/^")
-}
-
 func isValidOperand(c string) bool {
 	_, err := strconv.Atoi(c)
 	return err == nil
