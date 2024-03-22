@@ -9,6 +9,8 @@ import (
 
 func TestPrefixToPostfix(t *testing.T) { check.TestingT(t) }
 
+type PrefixToPostfixSuite struct{}
+
 var _ = check.Suite(&PrefixToPostfixSuite{})
 
 func (s *PrefixToPostfixSuite) TestPrefixToPostfix(c *check.C) {
